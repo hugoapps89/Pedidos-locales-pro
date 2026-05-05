@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pedidos Locales PRO</title>
+
 <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -29,10 +30,9 @@
 <div id="cart-items"></div>
 </div>
 
-<button class="main" onclick="enviarPedido()">Enviar</button>
+<button class="main compact" onclick="enviarPedido()">Enviar</button>
 </div>
 
-<!-- ADMIN -->
 <div class="admin">
 <h3>Panel Admin</h3>
 <input id="pass" placeholder="Contraseña">
@@ -40,24 +40,7 @@
 <div id="admin-panel"></div>
 </div>
 
-<!-- FORMULARIO -->
-<div id="form-negocio" class="admin" style="display:none;">
-<h3>Agregar negocio</h3>
-
-<input id="n-nombre" placeholder="Nombre">
-<input id="n-direccion" placeholder="Dirección">
-<input id="n-imagen" placeholder="URL imagen">
-<input id="n-telefono" placeholder="Teléfono">
-
-<h4>Producto inicial</h4>
-<input id="p-nombre" placeholder="Nombre producto">
-<input id="p-precio" placeholder="Precio">
-<input id="p-img" placeholder="URL imagen">
-
-<button onclick="guardarNegocio()" class="main">Guardar negocio</button>
-</div>
-
-<script type="module" src="app.js"></script>
+<script src="app.js"></script>
 
 </body>
 </html>

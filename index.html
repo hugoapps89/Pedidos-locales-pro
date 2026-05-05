@@ -7,7 +7,31 @@
 
 <link rel="stylesheet" href="styles.css">
 </head>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, updateDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyB2XTrUWKtWd_Pn3_8MJ5uZ7ysSO72ytdI",
+  authDomain: "pedidos-locales.firebaseapp.com",
+  projectId: "pedidos-locales",
+  storageBucket: "pedidos-locales.firebasestorage.app",
+  messagingSenderId: "1069589244691",
+  appId: "1:1069589244691:web:a8f8da4f9091001736c8e6"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// HACER GLOBAL (clave para tu app.js)
+window.db = db;
+window.collection = collection;
+window.getDocs = getDocs;
+window.updateDoc = updateDoc;
+window.doc = doc;
+window.onSnapshot = onSnapshot;
+
+</script>
 <body>
 
 <header id="titulo">Pedidos CD Caucel</header>

@@ -1,69 +1,31 @@
-let envio=30;
+let envio = 30;
 
-let negocios=[
-{
-nombre:"Tienda La Esquina",
-direccion:"Calle 45 x 120",
-imagen:"https://images.unsplash.com/photo-1604719312566-8912e9c8a213",
-telefono:"9995131376",
-activo:true,
-destacado:false,
-productos:[
-{nombre:"Coca Cola",precio:20,img:"https://i.imgur.com/8Km9tLL.jpg"},
-{nombre:"Pan dulce",precio:10,img:"https://i.imgur.com/UPrs1EW.jpg"}
-]
-},
-{
-nombre:"Papelería Lupita",
-direccion:"Calle 60 x 115",
-imagen:"https://images.unsplash.com/photo-1588072432836-e10032774350",
-telefono:"9995131376",
-activo:true,
-destacado:false,
-productos:[
-{nombre:"Cuaderno",precio:35,img:"https://i.imgur.com/BoN9kdC.png"},
-{nombre:"Pluma",precio:8,img:"https://i.imgur.com/kdXkV6x.png"}
-]
-},
-{
-nombre:"Tlapalería El Tornillo",
-direccion:"Calle 50 x 130",
-imagen:"https://images.unsplash.com/photo-1581578731548-c64695cc6952",
-telefono:"9995131376",
-activo:true,
-destacado:false,
-productos:[
-{nombre:"Martillo",precio:80,img:"https://i.imgur.com/yx6o7ZK.png"},
-{nombre:"Clavos",precio:25,img:"https://i.imgur.com/7bKQ9yG.png"}
-]
-},
-{
-nombre:"Papelería Escolar Plus",
-direccion:"Calle 80 x 150",
-imagen:"https://images.unsplash.com/photo-1588072432836-e10032774350",
-telefono:"9995131376",
-activo:true,
-destacado:false,
-productos:[
-{nombre:"Colores",precio:50,img:"https://i.imgur.com/BoN9kdC.png"},
-{nombre:"Goma",precio:12,img:"https://i.imgur.com/kdXkV6x.png"}
-]
-},
-{
-nombre:"Mini Súper San José",
-direccion:"Calle 70 x 140",
-imagen:"https://images.unsplash.com/photo-1542838132-92c53300491e",
-telefono:"9995131376",
-activo:true,
-destacado:false,
-productos:[
-{nombre:"Leche",precio:30,img:"https://i.imgur.com/8Km9tLL.jpg"},
-{nombre:"Pan blanco",precio:28,img:"https://i.imgur.com/UPrs1EW.jpg"}
-]
+let negocios = [];
+let carrito = {}, negocioActual = null;
+
+/* 🔥 CARGAR DESDE FIREBASE EN TIEMPO REAL */
+function cargarNegociosRealtime(){
+
+  const ref = collection(db, "negocios");
+
+  onSnapshot(ref, (snapshot) => {
+
+    negocios = [];
+
+    snapshot.forEach(docu => {
+      negocios.push({
+        id: docu.id,
+        ...docu.data()
+      });
+    });
+
+    console.log("🔥 Datos cargados:", negocios);
+
+    renderHome();
+
+  });
+
 }
-];
-
-let carrito={},negocioActual=null;
 
 /* HOME */
 function renderHome(){
@@ -100,7 +62,7 @@ document.getElementById("titulo").innerText=negocioActual.nombre;
 let m=document.getElementById("menu");
 m.innerHTML=`<button onclick="volver()">⬅ Volver</button>`;
 
-negocioActual.productos.forEach((p,i)=>{
+(negocioActual.productos || []).forEach((p,i)=>{
 m.innerHTML+=`
 <div class="product">
 <div class="product-left">
@@ -166,7 +128,7 @@ function toggleCart(){
 document.getElementById("cart").classList.toggle("active");
 }
 
-/* MENSAJE MEJORADO */
+/* MENSAJE */
 function enviarPedido(){
 let dir=document.getElementById("direccion").value;
 if(!dir)return alert("Pon dirección");
@@ -189,7 +151,6 @@ total+=subtotal;
 }
 
 msg+=`\n🚚 Envío: $${envio}\n`;
-
 total+=envio;
 
 msg+=`\n💰 *Total: $${total}*\n\n`;
@@ -206,7 +167,7 @@ document.getElementById("menu").style.display="none";
 document.getElementById("titulo").innerText="Pedidos CD Caucel";
 }
 
-/* ADMIN RESTAURADO */
+/* ADMIN */
 function login(){
 let pass=document.getElementById("pass").value;
 
@@ -236,16 +197,27 @@ border-radius:6px;">
 }else alert("Contraseña incorrecta");
 }
 
-function toggle(i){
-negocios[i].activo=!negocios[i].activo;
-renderHome();
-login();
+/* 🔥 ACTIVAR / DESACTIVAR (FIREBASE) */
+async function toggle(i){
+let n = negocios[i];
+
+const ref = doc(db, "negocios", n.id);
+
+await updateDoc(ref, {
+  activo: !n.activo
+});
 }
 
-function toggleDestacado(i){
-negocios[i].destacado=!negocios[i].destacado;
-renderHome();
-login();
+/* 🔥 DESTACADO EN TIEMPO REAL */
+async function toggleDestacado(i){
+let n = negocios[i];
+
+const ref = doc(db, "negocios", n.id);
+
+await updateDoc(ref, {
+  destacado: !n.destacado
+});
 }
 
-renderHome();
+/* INICIO */
+cargarNegociosRealtime();

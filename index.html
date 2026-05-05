@@ -40,7 +40,7 @@
 <div id="admin-panel"></div>
 </div>
 
-<!-- 🔥 FIREBASE PRIMERO -->
+<!-- 🔥 FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, updateDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -57,7 +57,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 👇 HACER GLOBAL (MUY IMPORTANTE)
+// 👇 HACER GLOBAL
 window.db = db;
 window.collection = collection;
 window.getDocs = getDocs;
@@ -65,10 +65,13 @@ window.updateDoc = updateDoc;
 window.doc = doc;
 window.onSnapshot = onSnapshot;
 
+// 👇 BANDERA DE CARGA
+window.firebaseReady = true;
+
 console.log("🔥 Firebase conectado correctamente");
 </script>
 
-<!-- 🔥 TU APP DESPUÉS -->
+<!-- TU APP -->
 <script src="app.js"></script>
 
 </body>

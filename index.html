@@ -1,30 +1,46 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedidos Locales PRO</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <h1>Negocios Destacados</h1>
-    
-    <div class="businesses">
-        <!-- Example business entries -->
-        <div class="business">
-            <input type="checkbox" class="featured-checkbox" id="business1" data-name="Negocio 1">
-            <label for="business1">Negocio 1</label>
-        </div>
-        <div class="business">
-            <input type="checkbox" class="featured-checkbox" id="business2" data-name="Negocio 2">
-            <label for="business2">Negocio 2</label>
-        </div>
-        <div class="business">
-            <input type="checkbox" class="featured-checkbox" id="business3" data-name="Negocio 3">
-            <label for="business3">Negocio 3</label>
-        </div>
-    </div>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pedidos Locales PRO</title>
 
-    <script src="app.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header id="titulo">Pedidos CD Caucel</header>
+
+<div id="home" class="container"></div>
+<div id="menu" class="container" style="display:none;"></div>
+
+<div class="fab" id="fab" onclick="toggleCart()">
+🛒 $<span id="total-fab">0</span>
+</div>
+
+<div class="cart" id="cart">
+<div class="cart-header">
+<span>Tu pedido</span>
+<button onclick="toggleCart()">✖</button>
+</div>
+
+<div class="cart-body">
+<input id="direccion" placeholder="📍 Dirección">
+<div id="cart-items"></div>
+</div>
+
+<button class="main compact" onclick="enviarPedido()">Enviar</button>
+</div>
+
+<div class="admin">
+<h3>Panel Admin</h3>
+<input id="pass" placeholder="Contraseña">
+<button onclick="login()">Entrar</button>
+<div id="admin-panel"></div>
+</div>
+
+<script src="app.js"></script>
+
 </body>
 </html>

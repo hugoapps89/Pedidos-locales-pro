@@ -1,47 +1,84 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+let envio=30;
 
-/* FIREBASE */
-const firebaseConfig = {
-  apiKey: "AIzaSyB2XTrUWKtWd_Pn3_8MJ5uZ7ysSO72ytdI",
-  authDomain: "pedidos-locales.firebaseapp.com",
-  projectId: "pedidos-locales",
-  storageBucket: "pedidos-locales.firebasestorage.app",
-  messagingSenderId: "1069589244691",
-  appId: "1:1069589244691:web:a8f8da4f9091001736c8e6"
-};
+let negocios=[
+{
+nombre:"Tienda La Esquina",
+direccion:"Calle 45 x 120",
+imagen:"https://images.unsplash.com/photo-1604719312566-8912e9c8a213",
+telefono:"9995131376",
+activo:true,
+destacado:false,
+productos:[
+{nombre:"Coca Cola",precio:20,img:"https://i.imgur.com/8Km9tLL.jpg"},
+{nombre:"Pan dulce",precio:10,img:"https://i.imgur.com/UPrs1EW.jpg"}
+]
+},
+{
+nombre:"Papelería Lupita",
+direccion:"Calle 60 x 115",
+imagen:"https://images.unsplash.com/photo-1588072432836-e10032774350",
+telefono:"9995131376",
+activo:true,
+destacado:false,
+productos:[
+{nombre:"Cuaderno",precio:35,img:"https://i.imgur.com/BoN9kdC.png"},
+{nombre:"Pluma",precio:8,img:"https://i.imgur.com/kdXkV6x.png"}
+]
+},
+{
+nombre:"Tlapalería El Tornillo",
+direccion:"Calle 50 x 130",
+imagen:"https://images.unsplash.com/photo-1581578731548-c64695cc6952",
+telefono:"9995131376",
+activo:true,
+destacado:false,
+productos:[
+{nombre:"Martillo",precio:80,img:"https://i.imgur.com/yx6o7ZK.png"},
+{nombre:"Clavos",precio:25,img:"https://i.imgur.com/7bKQ9yG.png"}
+]
+},
+{
+nombre:"Papelería Escolar Plus",
+direccion:"Calle 80 x 150",
+imagen:"https://images.unsplash.com/photo-1588072432836-e10032774350",
+telefono:"9995131376",
+activo:true,
+destacado:false,
+productos:[
+{nombre:"Colores",precio:50,img:"https://i.imgur.com/BoN9kdC.png"},
+{nombre:"Goma",precio:12,img:"https://i.imgur.com/kdXkV6x.png"}
+]
+},
+{
+nombre:"Mini Súper San José",
+direccion:"Calle 70 x 140",
+imagen:"https://images.unsplash.com/photo-1542838132-92c53300491e",
+telefono:"9995131376",
+activo:true,
+destacado:false,
+productos:[
+{nombre:"Leche",precio:30,img:"https://i.imgur.com/8Km9tLL.jpg"},
+{nombre:"Pan blanco",precio:28,img:"https://i.imgur.com/UPrs1EW.jpg"}
+]
+}
+];
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-/* VARIABLES */
-let negocios = [];
-let carrito = {};
-let negocioActual = null;
-let envio = 30;
-
-/* 🔥 REALTIME */
-onSnapshot(collection(db, "negocios"), (snapshot) => {
-  negocios = [];
-  snapshot.forEach(docu => {
-    negocios.push({ id: docu.id, ...docu.data() });
-  });
-  renderHome();
-});
+let carrito={},negocioActual=null;
 
 /* HOME */
 function renderHome(){
-let cont = document.getElementById("home");
-cont.innerHTML = "";
+let cont=document.getElementById("home");
+cont.innerHTML="";
 
-let ordenados = [...negocios].sort((a,b)=>b.destacado-a.destacado);
+let ordenados=[...negocios].sort((a,b)=>b.destacado-a.destacado);
 
-ordenados.forEach((n,i)=>{
-if(!n.activo) return;
+ordenados.forEach(n=>{
+if(!n.activo)return;
+let i=negocios.indexOf(n);
 
-cont.innerHTML += `
+cont.innerHTML+=`
 <div class="card" onclick="verMenu(${i})">
-${n.destacado ? '<div class="badge">⭐ Destacado</div>' : ''}
+${n.destacado?'<div class="badge">⭐ Destacado</div>':''}
 <div>
 <h3>${n.nombre}</h3>
 <p>${n.direccion}</p>
@@ -52,25 +89,24 @@ ${n.destacado ? '<div class="badge">⭐ Destacado</div>' : ''}
 }
 
 /* MENU */
-window.verMenu = function(i){
-negocioActual = negocios[i];
-carrito = {};
+function verMenu(i){
+negocioActual=negocios[i];
+carrito={};
 
 document.getElementById("home").style.display="none";
 document.getElementById("menu").style.display="block";
-document.getElementById("titulo").innerText = negocioActual.nombre;
+document.getElementById("titulo").innerText=negocioActual.nombre;
 
-let m = document.getElementById("menu");
-m.innerHTML = `<button onclick="volver()">⬅ Volver</button>`;
+let m=document.getElementById("menu");
+m.innerHTML=`<button onclick="volver()">⬅ Volver</button>`;
 
-(negocioActual.productos || []).forEach((p,i)=>{
-m.innerHTML += `
+negocioActual.productos.forEach((p,i)=>{
+m.innerHTML+=`
 <div class="product">
-<div>
-<div class="product-name">${p.nombre}</div>
-<div class="product-price">$${p.precio}</div>
+<div class="product-left">
+<img src="${p.img}">
+<div>${p.nombre}<br>$${p.precio}</div>
 </div>
-
 <div class="qty">
 <button onclick="cambiar(${i},-1)">-</button>
 <span id="q${i}">0</span>
@@ -81,114 +117,135 @@ m.innerHTML += `
 }
 
 /* CARRITO */
-window.cambiar = function(i,d){
-let p = negocioActual.productos[i];
-let k = p.nombre;
+function cambiar(i,d){
+let prod=negocioActual.productos[i];
+let k=prod.nombre;
 
-carrito[k] = (carrito[k]||0) + d;
-if(carrito[k] <= 0) delete carrito[k];
+carrito[k]=(carrito[k]||0)+d;
+if(carrito[k]<=0)delete carrito[k];
 
-document.getElementById("q"+i).innerText = carrito[k] || 0;
+document.getElementById("q"+i).innerText=carrito[k]||0;
 renderCart();
 }
 
 function renderCart(){
-let c = document.getElementById("cart-items");
-let fab = document.getElementById("fab");
+let c=document.getElementById("cart-items");
+let fab=document.getElementById("fab");
 
 c.innerHTML="";
-let total=0, count=0;
+let total=0,count=0;
 
 for(let k in carrito){
-let p = negocioActual.productos.find(x=>x.nombre==k);
-let cant = carrito[k];
-let sub = p.precio*cant;
+let prod=negocioActual.productos.find(p=>p.nombre==k);
+let cant=carrito[k];
+let subtotal=prod.precio*cant;
 
-total += sub;
-count += cant;
+total+=subtotal;
+count+=cant;
 
-c.innerHTML += `<div class="cart-item">${k} x${cant} = $${sub}</div>`;
+c.innerHTML+=`
+<div class="cart-item">
+${k} x${cant} = $${subtotal}
+</div>`;
 }
 
 if(count>0){
-total += envio;
-c.innerHTML += `<div class="cart-item">Envío = $${envio}</div>`;
+total+=envio;
+c.innerHTML+=`<div class="cart-item">Envío = $${envio}</div>`;
 }
 
-c.innerHTML += `<div class="cart-item"><b>Total: $${total}</b></div>`;
+c.innerHTML+=`<div class="cart-item"><b>Total: $${total}</b></div>`;
 
-fab.style.display = count>0 ? "block" : "none";
-document.getElementById("total-fab").innerText = total;
+if(count>0){
+fab.style.display="block";
+document.getElementById("total-fab").innerText=total;
+}else fab.style.display="none";
 }
 
-/* CARRITO UI */
-window.toggleCart = function(){
+function toggleCart(){
 document.getElementById("cart").classList.toggle("active");
 }
 
-/* PEDIDO */
-window.enviarPedido = function(){
-let dir = document.getElementById("direccion").value;
-if(!dir) return alert("Pon dirección");
+/* MENSAJE MEJORADO */
+function enviarPedido(){
+let dir=document.getElementById("direccion").value;
+if(!dir)return alert("Pon dirección");
 
-let msg = `🧾 Pedido\n\n🏪 ${negocioActual.nombre}\n📍 ${negocioActual.direccion}\n\n`;
+let msg=`🧾 *Pedido*\n\n`;
+msg+=`🏪 *${negocioActual.nombre}*\n`;
+msg+=`📍 ${negocioActual.direccion}\n\n`;
 
 let total=0;
 
-for(let k in carrito){
-let p = negocioActual.productos.find(x=>x.nombre==k);
-let cant = carrito[k];
-let sub = p.precio*cant;
+msg+=`🛒 *Productos:*\n`;
 
-msg += `- ${k} x${cant} = $${sub}\n`;
-total += sub;
+for(let k in carrito){
+let p=negocioActual.productos.find(x=>x.nombre==k);
+let cant=carrito[k];
+let subtotal=p.precio*cant;
+
+msg+=`- ${k} x${cant} = $${subtotal}\n`;
+total+=subtotal;
 }
 
-total += envio;
+msg+=`\n🚚 Envío: $${envio}\n`;
 
-msg += `\n🚚 Envío: $${envio}`;
-msg += `\n💰 Total: $${total}`;
-msg += `\n📍 ${dir}`;
+total+=envio;
 
-window.open(`https://wa.me/52${negocioActual.telefono}?text=${encodeURIComponent(msg)}`);
+msg+=`\n💰 *Total: $${total}*\n\n`;
+msg+=`📍 Entregar en: ${dir}`;
+
+let url=`https://wa.me/52${negocioActual.telefono}?text=${encodeURIComponent(msg)}`;
+window.open(url);
 }
 
 /* VOLVER */
-window.volver = function(){
+function volver(){
 document.getElementById("home").style.display="block";
 document.getElementById("menu").style.display="none";
 document.getElementById("titulo").innerText="Pedidos CD Caucel";
 }
 
-/* ADMIN */
-window.login = function(){
-if(document.getElementById("pass").value==="1234"){
-document.getElementById("form-negocio").style.display="block";
-alert("Admin activado");
-}
-}
+/* ADMIN RESTAURADO */
+function login(){
+let pass=document.getElementById("pass").value;
 
-/* GUARDAR NEGOCIO */
-window.guardarNegocio = async function(){
+if(pass==="1234"){
+let panel=document.getElementById("admin-panel");
+panel.innerHTML="<h4>Administrar negocios</h4>";
 
-let nombre = document.getElementById("n-nombre").value;
-let direccion = document.getElementById("n-direccion").value;
-let imagen = document.getElementById("n-imagen").value;
-let telefono = document.getElementById("n-telefono").value;
+negocios.forEach((n,i)=>{
+panel.innerHTML+=`
+<div style="background:white;padding:10px;margin:8px 0;border-radius:10px;">
+<div style="display:flex;justify-content:space-between;">
+<span>${n.nombre}</span>
+<button onclick="toggle(${i})">${n.activo?"Activo":"Inactivo"}</button>
+</div>
 
-let pNombre = document.getElementById("p-nombre").value;
-let pPrecio = Number(document.getElementById("p-precio").value);
-let pImg = document.getElementById("p-img").value;
+<button onclick="toggleDestacado(${i})" style="
+margin-top:5px;
+background:${n.destacado?'gold':'#ccc'};
+border:none;
+padding:5px 8px;
+border-radius:6px;">
+⭐ ${n.destacado?"Destacado":"No destacado"}
+</button>
 
-await addDoc(collection(db,"negocios"),{
-nombre,
-direccion,
-imagen,
-telefono,
-activo:true,
-destacado:false,
-productos:[{nombre:pNombre,precio:pPrecio,img:pImg}]
+</div>`;
 });
-
-alert("Negocio agregado");
+}else alert("Contraseña incorrecta");
 }
+
+function toggle(i){
+negocios[i].activo=!negocios[i].activo;
+renderHome();
+login();
+}
+
+function toggleDestacado(i){
+negocios[i].destacado=!negocios[i].destacado;
+renderHome();
+login();
+}
+
+renderHome();

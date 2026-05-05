@@ -1,9 +1,6 @@
 let envio = 30;
 
-/* =========================
-   DATOS INICIALES
-========================= */
-let negociosIniciales = [
+let negocios = [
 {
 nombre:"Tienda La Esquina",
 direccion:"Calle 45 x 120",
@@ -27,92 +24,46 @@ productos:[
 {nombre:"Cuaderno",precio:35,img:"https://i.imgur.com/BoN9kdC.png"},
 {nombre:"Pluma",precio:8,img:"https://i.imgur.com/kdXkV6x.png"}
 ]
-},
-{
-nombre:"Tlapalería El Tornillo",
-direccion:"Calle 50 x 130",
-imagen:"https://images.unsplash.com/photo-1581578731548-c64695cc6952",
-telefono:"9995131376",
-activo:true,
-destacado:false,
-productos:[
-{nombre:"Martillo",precio:80,img:"https://i.imgur.com/yx6o7ZK.png"},
-{nombre:"Clavos",precio:25,img:"https://i.imgur.com/7bKQ9yG.png"}
-]
-},
-{
-nombre:"Papelería Escolar Plus",
-direccion:"Calle 80 x 150",
-imagen:"https://images.unsplash.com/photo-1588072432836-e10032774350",
-telefono:"9995131376",
-activo:true,
-destacado:false,
-productos:[
-{nombre:"Colores",precio:50,img:"https://i.imgur.com/BoN9kdC.png"},
-{nombre:"Goma",precio:12,img:"https://i.imgur.com/kdXkV6x.png"}
-]
-},
-{
-nombre:"Mini Súper San José",
-direccion:"Calle 70 x 140",
-imagen:"https://images.unsplash.com/photo-1542838132-92c53300491e",
-telefono:"9995131376",
-activo:true,
-destacado:false,
-productos:[
-{nombre:"Leche",precio:30,img:"https://i.imgur.com/8Km9tLL.jpg"},
-{nombre:"Pan blanco",precio:28,img:"https://i.imgur.com/UPrs1EW.jpg"}
-]
 }
 ];
 
-/* =========================
-   CARGA SEGURA (CLAVE 🔥)
-========================= */
-function cargarNegocios(){
-    let guardado = localStorage.getItem("negocios");
+let carrito={},negocioActual=null;
 
-    if(guardado){
-        try{
-            return JSON.parse(guardado);
-        }catch(e){
-            console.error("Error en localStorage, reiniciando...");
-            return negociosIniciales;
-        }
+/* ================= FIREBASE ================= */
+
+async function guardarDatos(){
+    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+
+    await setDoc(doc(window.db, "app", "negocios"), {
+        data: negocios
+    });
+}
+
+async function cargarDatos(){
+    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+
+    const ref = doc(window.db, "app", "negocios");
+    const snap = await getDoc(ref);
+
+    if(snap.exists()){
+        negocios = snap.data().data;
+        renderHome();
     }
-
-    return negociosIniciales;
 }
 
-let negocios = cargarNegocios();
+/* ================= UI ================= */
 
-/* =========================
-   GUARDAR
-========================= */
-function guardarDatos(){
-    localStorage.setItem("negocios", JSON.stringify(negocios));
-    console.log("Guardado ✔");
-}
-
-/* =========================
-   VARIABLES
-========================= */
-let carrito = {}, negocioActual = null;
-
-/* =========================
-   HOME
-========================= */
 function renderHome(){
-    let cont = document.getElementById("home");
-    cont.innerHTML = "";
+    let cont=document.getElementById("home");
+    cont.innerHTML="";
 
-    let ordenados = [...negocios].sort((a,b)=>b.destacado - a.destacado);
+    let ordenados=[...negocios].sort((a,b)=>b.destacado-a.destacado);
 
     ordenados.forEach(n=>{
-        if(!n.activo) return;
-        let i = negocios.indexOf(n);
+        if(!n.activo)return;
+        let i=negocios.indexOf(n);
 
-        cont.innerHTML += `
+        cont.innerHTML+=`
         <div class="card" onclick="verMenu(${i})">
         ${n.destacado?'<div class="badge">⭐ Destacado</div>':''}
         <div>
@@ -124,26 +75,6 @@ function renderHome(){
     });
 }
 
-/* =========================
-   ADMIN (CLAVE 🔥)
-========================= */
-function toggle(i){
-    negocios[i].activo = !negocios[i].activo;
-    guardarDatos();
-    renderHome();
-    login();
-}
-
-function toggleDestacado(i){
-    negocios[i].destacado = !negocios[i].destacado;
-    guardarDatos();
-    renderHome();
-    login();
-}
-
-/* =========================
-   RESTO IGUAL (resumido)
-========================= */
 function verMenu(i){
     negocioActual=negocios[i];
     carrito={};
@@ -176,46 +107,16 @@ function cambiar(i,d){
     let k=prod.nombre;
 
     carrito[k]=(carrito[k]||0)+d;
-    if(carrito[k]<=0) delete carrito[k];
+    if(carrito[k]<=0)delete carrito[k];
 
     document.getElementById("q"+i).innerText=carrito[k]||0;
-    renderCart();
-}
-
-function renderCart(){
-    let c=document.getElementById("cart-items");
-    let fab=document.getElementById("fab");
-
-    c.innerHTML="";
-    let total=0,count=0;
-
-    for(let k in carrito){
-        let prod=negocioActual.productos.find(p=>p.nombre==k);
-        let cant=carrito[k];
-        let subtotal=prod.precio*cant;
-
-        total+=subtotal;
-        count+=cant;
-
-        c.innerHTML+=`${k} x${cant} = $${subtotal}<br>`;
-    }
-
-    if(count>0){
-        total+=envio;
-        c.innerHTML+=`Envío = $${envio}<br>`;
-    }
-
-    c.innerHTML+=`<b>Total: $${total}</b>`;
-
-    if(count>0){
-        fab.style.display="block";
-        document.getElementById("total-fab").innerText=total;
-    } else fab.style.display="none";
 }
 
 function toggleCart(){
     document.getElementById("cart").classList.toggle("active");
 }
+
+/* ================= PEDIDO ================= */
 
 function enviarPedido(){
     let dir=document.getElementById("direccion").value;
@@ -248,24 +149,35 @@ function volver(){
     document.getElementById("titulo").innerText="Pedidos CD Caucel";
 }
 
+/* ================= ADMIN ================= */
+
 function login(){
     let pass=document.getElementById("pass").value;
 
     if(pass==="1234"){
         let panel=document.getElementById("admin-panel");
-        panel.innerHTML="<h4>Administrar negocios</h4>";
+        panel.innerHTML="<h4>Admin</h4>";
 
         negocios.forEach((n,i)=>{
             panel.innerHTML+=`
             <div>
             ${n.nombre}
-            <button onclick="toggle(${i})">${n.activo?"Activo":"Inactivo"}</button>
             <button onclick="toggleDestacado(${i})">
             ${n.destacado?"⭐":"☆"}
             </button>
             </div>`;
         });
-    } else alert("Contraseña incorrecta");
+    }
 }
 
+function toggleDestacado(i){
+    negocios[i].destacado=!negocios[i].destacado;
+    guardarDatos();
+    renderHome();
+    login();
+}
+
+/* ================= INICIO ================= */
+
 renderHome();
+cargarDatos();

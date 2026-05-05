@@ -3,7 +3,7 @@ let envio = 30;
 /* =========================
    DATOS INICIALES
 ========================= */
-let negocios = [
+let negociosIniciales = [
 {
 nombre:"Tienda La Esquina",
 direccion:"Calle 45 x 120",
@@ -67,25 +67,37 @@ productos:[
 ];
 
 /* =========================
-   CARGAR LOCALSTORAGE
+   CARGA SEGURA (CLAVE 🔥)
 ========================= */
-let dataGuardada = localStorage.getItem("negocios");
+function cargarNegocios(){
+    let guardado = localStorage.getItem("negocios");
 
-if (dataGuardada) {
-    negocios = JSON.parse(dataGuardada);
+    if(guardado){
+        try{
+            return JSON.parse(guardado);
+        }catch(e){
+            console.error("Error en localStorage, reiniciando...");
+            return negociosIniciales;
+        }
+    }
+
+    return negociosIniciales;
+}
+
+let negocios = cargarNegocios();
+
+/* =========================
+   GUARDAR
+========================= */
+function guardarDatos(){
+    localStorage.setItem("negocios", JSON.stringify(negocios));
+    console.log("Guardado ✔");
 }
 
 /* =========================
    VARIABLES
 ========================= */
 let carrito = {}, negocioActual = null;
-
-/* =========================
-   GUARDAR DATOS
-========================= */
-function guardarDatos(){
-    localStorage.setItem("negocios", JSON.stringify(negocios));
-}
 
 /* =========================
    HOME
@@ -113,11 +125,28 @@ function renderHome(){
 }
 
 /* =========================
-   MENU
+   ADMIN (CLAVE 🔥)
+========================= */
+function toggle(i){
+    negocios[i].activo = !negocios[i].activo;
+    guardarDatos();
+    renderHome();
+    login();
+}
+
+function toggleDestacado(i){
+    negocios[i].destacado = !negocios[i].destacado;
+    guardarDatos();
+    renderHome();
+    login();
+}
+
+/* =========================
+   RESTO IGUAL (resumido)
 ========================= */
 function verMenu(i){
-    negocioActual = negocios[i];
-    carrito = {};
+    negocioActual=negocios[i];
+    carrito={};
 
     document.getElementById("home").style.display="none";
     document.getElementById("menu").style.display="block";
@@ -142,9 +171,6 @@ function verMenu(i){
     });
 }
 
-/* =========================
-   CARRITO
-========================= */
 function cambiar(i,d){
     let prod=negocioActual.productos[i];
     let k=prod.nombre;
@@ -171,18 +197,15 @@ function renderCart(){
         total+=subtotal;
         count+=cant;
 
-        c.innerHTML+=`
-        <div class="cart-item">
-        ${k} x${cant} = $${subtotal}
-        </div>`;
+        c.innerHTML+=`${k} x${cant} = $${subtotal}<br>`;
     }
 
     if(count>0){
         total+=envio;
-        c.innerHTML+=`<div class="cart-item">Envío = $${envio}</div>`;
+        c.innerHTML+=`Envío = $${envio}<br>`;
     }
 
-    c.innerHTML+=`<div class="cart-item"><b>Total: $${total}</b></div>`;
+    c.innerHTML+=`<b>Total: $${total}</b>`;
 
     if(count>0){
         fab.style.display="block";
@@ -194,53 +217,37 @@ function toggleCart(){
     document.getElementById("cart").classList.toggle("active");
 }
 
-/* =========================
-   WHATSAPP PROFESIONAL
-========================= */
 function enviarPedido(){
     let dir=document.getElementById("direccion").value;
-    if(!dir) return alert("Pon dirección");
+    if(!dir)return alert("Pon dirección");
 
-    let msg=`🧾 *Pedido*\n\n`;
-    msg+=`🏪 *${negocioActual.nombre}*\n`;
-    msg+=`📍 ${negocioActual.direccion}\n\n`;
+    let msg=`🧾 Pedido\n🏪 ${negocioActual.nombre}\n📍 ${negocioActual.direccion}\n\n`;
 
     let total=0;
-
-    msg+=`🛒 *Productos:*\n`;
 
     for(let k in carrito){
         let p=negocioActual.productos.find(x=>x.nombre==k);
         let cant=carrito[k];
         let subtotal=p.precio*cant;
 
-        msg+=`- ${k} x${cant} = $${subtotal}\n`;
+        msg+=`${k} x${cant} = $${subtotal}\n`;
         total+=subtotal;
     }
 
-    msg+=`\n🚚 Envío: $${envio}\n`;
-
+    msg+=`\nEnvío: $${envio}`;
     total+=envio;
 
-    msg+=`\n💰 *Total: $${total}*\n\n`;
-    msg+=`📍 Entregar en: ${dir}`;
+    msg+=`\nTotal: $${total}\n📍 ${dir}`;
 
-    let url=`https://wa.me/52${negocioActual.telefono}?text=${encodeURIComponent(msg)}`;
-    window.open(url);
+    window.open(`https://wa.me/52${negocioActual.telefono}?text=${encodeURIComponent(msg)}`);
 }
 
-/* =========================
-   VOLVER
-========================= */
 function volver(){
     document.getElementById("home").style.display="block";
     document.getElementById("menu").style.display="none";
     document.getElementById("titulo").innerText="Pedidos CD Caucel";
 }
 
-/* =========================
-   ADMIN
-========================= */
 function login(){
     let pass=document.getElementById("pass").value;
 
@@ -250,40 +257,15 @@ function login(){
 
         negocios.forEach((n,i)=>{
             panel.innerHTML+=`
-            <div style="background:white;padding:10px;margin:8px 0;border-radius:10px;">
-            <div style="display:flex;justify-content:space-between;">
-            <span>${n.nombre}</span>
+            <div>
+            ${n.nombre}
             <button onclick="toggle(${i})">${n.activo?"Activo":"Inactivo"}</button>
-            </div>
-
-            <button onclick="toggleDestacado(${i})" style="
-            margin-top:5px;
-            background:${n.destacado?'gold':'#ccc'};
-            border:none;
-            padding:5px 8px;
-            border-radius:6px;">
-            ⭐ ${n.destacado?"Destacado":"No destacado"}
+            <button onclick="toggleDestacado(${i})">
+            ${n.destacado?"⭐":"☆"}
             </button>
             </div>`;
         });
     } else alert("Contraseña incorrecta");
 }
 
-function toggle(i){
-    negocios[i].activo=!negocios[i].activo;
-    guardarDatos();
-    renderHome();
-    login();
-}
-
-function toggleDestacado(i){
-    negocios[i].destacado=!negocios[i].destacado;
-    guardarDatos();
-    renderHome();
-    login();
-}
-
-/* =========================
-   INICIO
-========================= */
 renderHome();

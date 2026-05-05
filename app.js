@@ -3,7 +3,16 @@ let envio = 30;
 let negocios = [];
 let carrito = {}, negocioActual = null;
 
-/* 🔥 CARGAR DESDE FIREBASE EN TIEMPO REAL */
+/* 🔥 ESPERAR A FIREBASE */
+function iniciarApp(){
+  if(window.firebaseReady){
+    cargarNegociosRealtime();
+  } else {
+    setTimeout(iniciarApp, 200);
+  }
+}
+
+/* 🔥 CARGAR DATOS */
 function cargarNegociosRealtime(){
 
   const ref = collection(db, "negocios");
@@ -128,7 +137,7 @@ function toggleCart(){
 document.getElementById("cart").classList.toggle("active");
 }
 
-/* MENSAJE */
+/* PEDIDO */
 function enviarPedido(){
 let dir=document.getElementById("direccion").value;
 if(!dir)return alert("Pon dirección");
@@ -197,27 +206,18 @@ border-radius:6px;">
 }else alert("Contraseña incorrecta");
 }
 
-/* 🔥 ACTIVAR / DESACTIVAR (FIREBASE) */
+/* FIREBASE */
 async function toggle(i){
 let n = negocios[i];
-
 const ref = doc(db, "negocios", n.id);
-
-await updateDoc(ref, {
-  activo: !n.activo
-});
+await updateDoc(ref, { activo: !n.activo });
 }
 
-/* 🔥 DESTACADO EN TIEMPO REAL */
 async function toggleDestacado(i){
 let n = negocios[i];
-
 const ref = doc(db, "negocios", n.id);
-
-await updateDoc(ref, {
-  destacado: !n.destacado
-});
+await updateDoc(ref, { destacado: !n.destacado });
 }
 
 /* INICIO */
-cargarNegociosRealtime();
+iniciarApp();

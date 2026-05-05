@@ -10,7 +10,7 @@
 
 <body>
 
-<header id="titulo">Pedidos CD Caucel</header>
+<header>Pedidos CD Caucel</header>
 
 <div id="home" class="container"></div>
 
@@ -21,10 +21,10 @@
 <div id="admin-panel"></div>
 </div>
 
-<!-- 🔥 FIREBASE BIEN CONFIGURADO -->
+<!-- 🔥 FIREBASE CONFIG -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB2XTrUWKtWd_Pn3_8MJ5uZ7ysSO72ytdI",
@@ -38,9 +38,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* HACER TODO GLOBAL */
+/* 👇 HACEMOS GLOBAL FIREBASE */
+window.fb = { doc, getDoc, setDoc };
 window.db = db;
-window.fb = { doc, setDoc, getDoc };
 </script>
 
 <script src="app.js"></script>

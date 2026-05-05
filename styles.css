@@ -1,77 +1,187 @@
-body {margin:0;font-family:'Segoe UI',Arial;background:#f6f7fb;}
+body {
+margin:0;
+font-family:'Segoe UI',sans-serif;
+background:#f4f6fb;
+color:#333;
+}
 
+/* HEADER */
 header {
 background:linear-gradient(135deg,#ff5722,#ff784e);
-color:white;padding:18px;text-align:center;font-size:20px;font-weight:bold;
+color:white;
+padding:18px;
+text-align:center;
+font-size:20px;
+font-weight:bold;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
 }
 
-.container {padding:12px;}
+/* CONTENEDOR */
+.container {
+padding:15px;
+}
 
+/* TARJETAS */
 .card {
-background:white;border-radius:16px;margin-bottom:12px;padding:12px;
-display:flex;justify-content:space-between;align-items:center;
-box-shadow:0 4px 12px rgba(0,0,0,0.08);
-position:relative;
+background:white;
+border-radius:16px;
+padding:14px;
+margin-bottom:14px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 6px 15px rgba(0,0,0,0.08);
+transition:0.2s;
 cursor:pointer;
+position:relative;
 }
 
-.card img {width:65px;height:65px;border-radius:12px;}
+.card:hover {
+transform:scale(1.02);
+}
 
-.badge{
+.card img {
+width:65px;
+height:65px;
+border-radius:12px;
+object-fit:cover;
+}
+
+.card h3 {
+margin:0;
+font-size:16px;
+}
+
+.card p {
+margin:4px 0 0;
+font-size:13px;
+color:#777;
+}
+
+/* BADGE */
+.badge {
 position:absolute;
-top:8px;left:8px;
+top:8px;
+left:8px;
 background:gold;
-padding:3px 6px;
+padding:4px 6px;
 border-radius:6px;
 font-size:11px;
 font-weight:bold;
 }
 
+/* PRODUCTOS */
 .product {
-display:flex;justify-content:space-between;background:white;
-padding:10px;border-radius:14px;margin-top:10px;
+background:white;
+border-radius:14px;
+padding:12px;
+margin-top:10px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 4px 10px rgba(0,0,0,0.05);
 }
 
-.product-left {display:flex;gap:10px;}
-.product img {width:55px;height:55px;border-radius:10px;}
+.product-name {
+font-weight:bold;
+}
 
+.product-price {
+color:#ff5722;
+font-weight:bold;
+}
+
+/* BOTONES */
 .qty button {
-background:#111;color:white;border:none;border-radius:8px;width:28px;height:28px;
+background:#111;
+color:white;
+border:none;
+border-radius:8px;
+width:28px;
+height:28px;
+font-size:16px;
 }
 
+/* FAB */
 .fab {
-position:fixed;bottom:20px;right:20px;background:#111;color:white;
-padding:14px;border-radius:30px;display:none;
+position:fixed;
+bottom:20px;
+right:20px;
+background:#111;
+color:white;
+padding:14px 18px;
+border-radius:30px;
+font-weight:bold;
+box-shadow:0 6px 15px rgba(0,0,0,0.3);
+display:none;
 }
 
+/* CARRITO */
 .cart {
-position:fixed;bottom:-100%;left:0;right:0;height:70%;
-background:white;border-radius:20px 20px 0 0;
-transition:0.3s;display:flex;flex-direction:column;
+position:fixed;
+bottom:-100%;
+left:0;
+right:0;
+height:70%;
+background:white;
+border-radius:20px 20px 0 0;
+transition:0.3s;
+display:flex;
+flex-direction:column;
+box-shadow:0 -4px 15px rgba(0,0,0,0.2);
 }
 
-.cart.active {bottom:0;}
+.cart.active {
+bottom:0;
+}
 
-.cart-header {display:flex;justify-content:space-between;padding:14px;font-weight:bold;}
-.cart-body {flex:1;overflow:auto;}
+.cart-header {
+display:flex;
+justify-content:space-between;
+padding:14px;
+font-weight:bold;
+}
 
-.cart-item {padding:10px 14px;border-bottom:1px solid #eee;}
+.cart-item {
+padding:10px;
+border-bottom:1px solid #eee;
+}
 
+/* INPUTS */
 input {
-width:92%;margin:10px;padding:12px;border-radius:12px;border:1px solid #ddd;
+width:90%;
+margin:8px auto;
+display:block;
+padding:12px;
+border-radius:12px;
+border:1px solid #ddd;
+font-size:14px;
 }
 
-button.main.compact {
-background:#25D366;
+/* BOTONES PRINCIPALES */
+button.main {
+background:linear-gradient(135deg,#25D366,#1ebe5d);
 color:white;
 border:none;
 padding:12px;
 font-weight:bold;
-width:92%;
+width:90%;
 margin:10px auto;
 border-radius:12px;
 font-size:15px;
 display:block;
+transition:0.2s;
 }
 
-.admin {padding:12px;background:white;margin:10px;border-radius:10px;}
+button.main:hover {
+transform:scale(1.03);
+}
+
+/* ADMIN */
+.admin {
+padding:15px;
+background:white;
+margin:15px;
+border-radius:14px;
+box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}

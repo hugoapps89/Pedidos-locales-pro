@@ -3,16 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pedidos CD Caucel</title>
+<title>Pedidos Locales PRO</title>
 
 <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-<header>Pedidos CD Caucel</header>
+<header id="titulo">Pedidos CD Caucel</header>
 
 <div id="home" class="container"></div>
+<div id="menu" class="container" style="display:none;"></div>
+
+<div class="fab" id="fab" onclick="toggleCart()">
+🛒 $<span id="total-fab">0</span>
+</div>
+
+<div class="cart" id="cart">
+<div class="cart-header">
+<span>Tu pedido</span>
+<button onclick="toggleCart()">✖</button>
+</div>
+
+<div class="cart-body">
+<input id="direccion" placeholder="📍 Dirección">
+<div id="cart-items"></div>
+</div>
+
+<button class="main compact" onclick="enviarPedido()">Enviar</button>
+</div>
 
 <div class="admin">
 <h3>Panel Admin</h3>
@@ -20,28 +39,6 @@
 <button onclick="login()">Entrar</button>
 <div id="admin-panel"></div>
 </div>
-
-<!-- 🔥 FIREBASE CONFIG -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyB2XTrUWKtWd_Pn3_8MJ5uZ7ysSO72ytdI",
-  authDomain: "pedidos-locales.firebaseapp.com",
-  projectId: "pedidos-locales",
-  storageBucket: "pedidos-locales.firebasestorage.app",
-  messagingSenderId: "1069589244691",
-  appId: "1:1069589244691:web:a8f8da4f9091001736c8e6"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-/* 👇 HACEMOS GLOBAL FIREBASE */
-window.fb = { doc, getDoc, setDoc };
-window.db = db;
-</script>
 
 <script src="app.js"></script>
 

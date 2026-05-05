@@ -1,24 +1,32 @@
-let envio = 30;
+// 🔥 IMPORTAR FIREBASE DIRECTO
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, updateDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+/* CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyB2XTrUWKtWd_Pn3_8MJ5uZ7ysSO72ytdI",
+  authDomain: "pedidos-locales.firebaseapp.com",
+  projectId: "pedidos-locales",
+  storageBucket: "pedidos-locales.firebasestorage.app",
+  messagingSenderId: "1069589244691",
+  appId: "1:1069589244691:web:a8f8da4f9091001736c8e6"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+console.log("🔥 Firebase listo desde app.js");
+
+/* VARIABLES */
+let envio = 30;
 let negocios = [];
 let carrito = {}, negocioActual = null;
 
-/* 🔥 ESPERAR A FIREBASE */
-function iniciarApp(){
-  if(window.firebaseReady){
-    cargarNegociosRealtime();
-  } else {
-    setTimeout(iniciarApp, 200);
-  }
-}
-
-/* 🔥 CARGAR DATOS */
+/* 🔥 REALTIME */
 function cargarNegociosRealtime(){
-
   const ref = collection(db, "negocios");
 
   onSnapshot(ref, (snapshot) => {
-
     negocios = [];
 
     snapshot.forEach(docu => {
@@ -28,12 +36,9 @@ function cargarNegociosRealtime(){
       });
     });
 
-    console.log("🔥 Datos cargados:", negocios);
-
+    console.log("🔥 Datos:", negocios);
     renderHome();
-
   });
-
 }
 
 /* HOME */
@@ -60,7 +65,7 @@ ${n.destacado?'<div class="badge">⭐ Destacado</div>':''}
 }
 
 /* MENU */
-function verMenu(i){
+window.verMenu = function(i){
 negocioActual=negocios[i];
 carrito={};
 
@@ -88,7 +93,7 @@ m.innerHTML+=`
 }
 
 /* CARRITO */
-function cambiar(i,d){
+window.cambiar = function(i,d){
 let prod=negocioActual.productos[i];
 let k=prod.nombre;
 
@@ -133,12 +138,12 @@ document.getElementById("total-fab").innerText=total;
 }else fab.style.display="none";
 }
 
-function toggleCart(){
+window.toggleCart = function(){
 document.getElementById("cart").classList.toggle("active");
 }
 
 /* PEDIDO */
-function enviarPedido(){
+window.enviarPedido = function(){
 let dir=document.getElementById("direccion").value;
 if(!dir)return alert("Pon dirección");
 
@@ -148,20 +153,17 @@ msg+=`📍 ${negocioActual.direccion}\n\n`;
 
 let total=0;
 
-msg+=`🛒 *Productos:*\n`;
-
 for(let k in carrito){
 let p=negocioActual.productos.find(x=>x.nombre==k);
 let cant=carrito[k];
 let subtotal=p.precio*cant;
-
 msg+=`- ${k} x${cant} = $${subtotal}\n`;
 total+=subtotal;
 }
 
-msg+=`\n🚚 Envío: $${envio}\n`;
 total+=envio;
 
+msg+=`\n🚚 Envío: $${envio}\n`;
 msg+=`\n💰 *Total: $${total}*\n\n`;
 msg+=`📍 Entregar en: ${dir}`;
 
@@ -170,14 +172,14 @@ window.open(url);
 }
 
 /* VOLVER */
-function volver(){
+window.volver = function(){
 document.getElementById("home").style.display="block";
 document.getElementById("menu").style.display="none";
 document.getElementById("titulo").innerText="Pedidos CD Caucel";
 }
 
 /* ADMIN */
-function login(){
+window.login = function(){
 let pass=document.getElementById("pass").value;
 
 if(pass==="1234"){
@@ -206,18 +208,16 @@ border-radius:6px;">
 }else alert("Contraseña incorrecta");
 }
 
-/* FIREBASE */
-async function toggle(i){
+/* FIREBASE UPDATE */
+window.toggle = async function(i){
 let n = negocios[i];
-const ref = doc(db, "negocios", n.id);
-await updateDoc(ref, { activo: !n.activo });
+await updateDoc(doc(db, "negocios", n.id), { activo: !n.activo });
 }
 
-async function toggleDestacado(i){
+window.toggleDestacado = async function(i){
 let n = negocios[i];
-const ref = doc(db, "negocios", n.id);
-await updateDoc(ref, { destacado: !n.destacado });
+await updateDoc(doc(db, "negocios", n.id), { destacado: !n.destacado });
 }
 
-/* INICIO */
-iniciarApp();
+/* START */
+cargarNegociosRealtime();

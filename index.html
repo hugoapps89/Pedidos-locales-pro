@@ -29,7 +29,7 @@
 <div id="cart-items"></div>
 </div>
 
-<button class="main compact" onclick="enviarPedido()">Enviar</button>
+<button class="main" onclick="enviarPedido()">Enviar</button>
 </div>
 
 <!-- ADMIN -->
@@ -37,31 +37,27 @@
 <h3>Panel Admin</h3>
 <input id="pass" placeholder="Contraseña">
 <button onclick="login()">Entrar</button>
-
 <div id="admin-panel"></div>
+</div>
 
 <!-- FORMULARIO -->
-<div id="form" style="display:none;">
-<h4>Agregar negocio</h4>
+<div id="form-negocio" class="admin" style="display:none;">
+<h3>Agregar negocio</h3>
 
-<input id="nNombre" placeholder="Nombre">
-<input id="nDireccion" placeholder="Dirección">
-<input id="nImagen" placeholder="Imagen URL">
-<input id="nTelefono" placeholder="Teléfono">
+<input id="n-nombre" placeholder="Nombre">
+<input id="n-direccion" placeholder="Dirección">
+<input id="n-imagen" placeholder="URL imagen">
+<input id="n-telefono" placeholder="Teléfono">
 
-<h5>Producto inicial</h5>
-<input id="pNombre" placeholder="Producto">
-<input id="pPrecio" placeholder="Precio">
-<input id="pImg" placeholder="Imagen producto">
+<h4>Producto inicial</h4>
+<input id="p-nombre" placeholder="Nombre producto">
+<input id="p-precio" placeholder="Precio">
+<input id="p-img" placeholder="URL imagen">
 
-<button onclick="agregarNegocio()" class="main compact">
-Guardar negocio
-</button>
+<button onclick="guardarNegocio()" class="main">Guardar negocio</button>
 </div>
 
-</div>
-
-<script src="app.js"></script>
+<script type="module" src="app.js"></script>
 
 </body>
 </html>
